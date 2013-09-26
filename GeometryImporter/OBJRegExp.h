@@ -1,4 +1,12 @@
-//RegExp's defined for OBJ file format
+/*	Author: Frank Dye
+	Date: 9/25/13
+	Copyright: Frank Dye, 9/25/2013
+	Description: Defines the RegExp constants used in the OBJ geometry file format. For more information check
+	http://en.wikipedia.org/wiki/Wavefront_.obj_file it gives a pretty good overview of the file format.
+*/
+
+#ifndef OBJREGEXP_H
+#define OBJREGEXP_H
 
 #include <regex>
 
@@ -78,3 +86,6 @@ const std::regex OBJ_TRANSPARENT_EXP = std::regex("(?:Tr)\\s*([-+]?[0-9]*\\.?[0-
 10. Casts shadows onto invisible surfaces
 */
 const std::regex OBJ_ILLUMINATION_EXP = std::regex("(?:illum)\\s*([0-9]*)");
+
+
+#endif
