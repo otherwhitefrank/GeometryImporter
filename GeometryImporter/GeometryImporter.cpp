@@ -9,15 +9,16 @@
 #include <tchar.h>
 
 #include "OBJRegExp.h"
+#include "GeometryElements.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int a = 0;
 
-	std::string s ("Ka 0.200000 0.200000 0.200000");
+	std::string s ("f 1 2 3 4 5");
 	std::smatch m;
-	std::string s_regex("(?:Ka)\\s*([-+]?[0-9]*\\.?[0-9]+)\\s*([-+]?[0-9]*\\.?[0-9]+)\\s*([-+]?[0-9]*\\.?[0-9]+)");
-	std::regex e ("(?:Ka)\\s*([-+]?[0-9]*\\.?[0-9]+)\\s*([-+]?[0-9]*\\.?[0-9]+)\\s*([-+]?[0-9]*\\.?[0-9]+)");   
+	std::string s_regex("(?:f)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)(\\s+[0-9]+)+");
+	std::regex e ("(?:f)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)(\\s+[0-9]+)+");   
 
 	std::cout << "Target sequence: " << s << std::endl;
 	std::cout << "Regular expression: " << s_regex  << std::endl;
