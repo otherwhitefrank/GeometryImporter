@@ -5,37 +5,36 @@
 */
 
 #include <iostream>
+#include <fstream>
 #include <regex>
 #include <tchar.h>
 
 #include "OBJRegExp.h"
 #include "GeometryElements.h"
+#include "CGeometryImporterOBJ.h"
+#include <direct.h>
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	int a = 0;
+	char        szTempFileName[1024];
+	string a;
 
-	std::string s ("f 1 2 3 4 5");
-	std::smatch m;
-	std::string s_regex("(?:f)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)(\\s+[0-9]+)+");
-	std::regex e ("(?:f)\\s+([0-9]+)\\s+([0-9]+)\\s+([0-9]+)(\\s+[0-9]+)+");   
+	//Open the File
+	_getcwd(szTempFileName, 1024);
+	strcat_s(szTempFileName, "\\Obj\\");
+	strcat_s(szTempFileName, "gsg9.obj");
 
-	std::cout << "Target sequence: " << s << std::endl;
-	std::cout << "Regular expression: " << s_regex  << std::endl;
-	std::cout << "The following matches and submatches were found:" << std::endl;
+	ifstream inFile(szTempFileName);
 
-	if (std::regex_match (s,m,e))
-	{
-		std::cout << "string object matched\n";
-		std::cout << "the matches were: ";
-		for (unsigned i=0; i<m.size(); ++i) {
-			std::cout << " [ " << m[i] << " ] ";
-		}
-	}
-	else 
-	{
-		std::cout << "string object not matched\n";
-	}
+	CGeometryImporterOBJ geoImporter(&inFile);
+
+	cout << "File details: \n";
+	cout << "Vertex Count: " << geoImporter.GetVertexCount() << "\n";
+	cout << "Normal Count: " << geoImporter.GetNormalVertexCount() << "\n";
+	cout << "Vertex Texture Count: " << geoImporter.GetTextureVertexCount() << "\n";
+	cout << "Face Count: " << geoImporter.GetFaceCount() << "\n";
+	cout << "Error Count: " << geoImporter.GetErrorCount() << "\n";
+
 
 	//Just here to keep the console window open. Hookey but works.
 	std::cin >> a;

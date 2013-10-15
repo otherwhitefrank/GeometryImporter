@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <list>
 #include "GeometryElements.h"
 #include "OBJRegExp.h"
@@ -31,12 +32,12 @@ public:
 
 	//Functions to request counts from file
 	int 	GetVertexCount()			{return m_VertexPosCount;};
-	int 	GetTextureVertexCount()	    {return m_VertexTextureCount};
+	int 	GetTextureVertexCount()	    {return m_VertexTextureCount;};
 	int 	GetNormalVertexCount()	    {return m_VertexNormalCount;};
 	int 	GetFaceCount()				{return m_FaceCount;};
-	int		GetMeshCount()				{m_MeshCount;};
+	int		GetMeshCount()				{return m_MeshCount;};
 
-	int		GetErrorCount()				{pErrorList->size();};
+	int		GetErrorCount()				{return pErrorList->size();};
 
 	//Functions to request pointers the internal geometry lists, the user is required to maintain this pointer and reset
 	//the library appropriately. If this is not done appropriately then it may result in a memory leak.
@@ -57,6 +58,7 @@ public:
 	void	CopyVertexPosList(list<Vector3D>* destVertexList);  //All perform physical memcpy
 	void	CopyVertexNormalList(list<Vector3D>* destVertexNormalList);
 	void	CopyVertexTextureList(list<Vector2D>* destVertexTextureList);
+	void	FreeAllBuffers();
 
 private:
 	void	ProcessFile();		   //Assumes m_inputFile is set, fills internal arrays
@@ -81,7 +83,7 @@ private:
 																//Format is of form <File Name:LineNumber>:<Error Found>
 
 	//File handle
-	ifstream*	m_InputFile;		//Pointer to an externally opened and verified input file, user is required to maintain it
+	ifstream*	pInputFile;		//Pointer to an externally opened and verified input file, user is required to maintain it
 };
 
 #endif
