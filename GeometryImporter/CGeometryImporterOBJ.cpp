@@ -32,7 +32,6 @@ CGeometryImporterOBJ::CGeometryImporterOBJ( ifstream* inputFile )
 CGeometryImporterOBJ::~CGeometryImporterOBJ()
 {
 	//Free all the buffers
-	FreeAllBuffers();
 }
 
 bool CGeometryImporterOBJ::LoadFile( ifstream* inputFile )
@@ -45,81 +44,85 @@ bool CGeometryImporterOBJ::LoadFile( ifstream* inputFile )
 	return true;
 }
 
-list<Vector3D>* CGeometryImporterOBJ::GetVertexPosList()
+vector<Vector3D> CGeometryImporterOBJ::GetVertexPosArray()
 {
-	return pVectorPosList;
+	return VectorPosArray;
 }
 
-list<Vector3D>* CGeometryImporterOBJ::GetVertexNormalList()
+vector<Vector3D> CGeometryImporterOBJ::GetVertexNormalArray()
 {
-	return pVectorNormalList;
+	return VectorNormalArray;
 }
 
-list<Vector2D>* CGeometryImporterOBJ::GetVertexTextureList()
+vector<Vector2D> CGeometryImporterOBJ::GetVertexTextureArray()
 {
-	return pVectorTextureList;
+	return VectorTextureArray;
 }
 
-list<VectorPosNormText>* CGeometryImporterOBJ::GetVectorPosNormTextList()
+vector<Face>	 CGeometryImporterOBJ::GetFaceArray()
 {
-	return pVectorPosNormTextList;
+	return FaceArray;
 }
 
-list<Mesh>* CGeometryImporterOBJ::GetMeshList()
+vector<Mesh> CGeometryImporterOBJ::GetMeshArray()
 {
-	return pMeshList;
+	return MeshArray;
 }
 
-list<string>* CGeometryImporterOBJ::GetErrorList()
+vector<string> CGeometryImporterOBJ::GetErrorArray()
 {
-	return pErrorList;
+	return ErrorArray;
 }
 
-void CGeometryImporterOBJ::CopyVectorPosNormTextList( list<VectorPosNormText>* destVectorPosNormTextList )
+void CGeometryImporterOBJ::CopyFaceArray( vector<Face>&	 destVectorPosNormTextArray )
 {
-	for (auto it = std::begin(*pVectorPosNormTextList); it!=std::end(*pVectorPosNormTextList); ++it)
-		destVectorPosNormTextList->push_back(*it);
+	for (auto it = std::begin(FaceArray); it!=std::end(FaceArray); ++it)
+		destVectorPosNormTextArray.push_back(*it);
 }
 
-void CGeometryImporterOBJ::CopyMeshList( list<Mesh>* destMeshList )
+void CGeometryImporterOBJ::CopyMeshArray(vector<Mesh>& destMeshArray)
 {
-	for (auto it = std::begin(*pMeshList); it!=std::end(*pMeshList); ++it)
-		destMeshList->push_back(*it);
+	for (auto it = std::begin(MeshArray); it!=std::end(MeshArray); ++it)
+		destMeshArray.push_back(*it);
 }
 
-void CGeometryImporterOBJ::CopyVertexPosList( list<Vector3D>* destVertexList )
+void CGeometryImporterOBJ::CopyVertexPosArray(vector<Vector3D>& destVertexArray)
 {
-	for (auto it = std::begin(*pVectorPosList); it!=std::end(*pVectorPosList); ++it)
-		destVertexList->push_back(*it);
+	for (auto it = std::begin(VectorPosArray); it!=std::end(VectorPosArray); ++it)
+		destVertexArray.push_back(*it);
 
 }
 
-void CGeometryImporterOBJ::CopyVertexNormalList( list<Vector3D>* destVertexNormalList )
+void CGeometryImporterOBJ::CopyVertexNormalArray(vector<Vector3D>& destVertexNormalArray)
 {
-	for (auto it = std::begin(*pVectorNormalList); it!=std::end(*pVectorNormalList); ++it)
-		destVertexNormalList->push_back(*it);
+	for (auto it = std::begin(VectorNormalArray); it!=std::end(VectorNormalArray); ++it)
+		destVertexNormalArray.push_back(*it);
 }
 
-void CGeometryImporterOBJ::CopyVertexTextureList( list<Vector2D>* destVertexTextureList )
+void CGeometryImporterOBJ::CopyVertexTextureArray(vector<Vector2D>& destVertexTextureArray)
 {
-	for (auto it = std::begin(*pVectorTextureList); it!=std::end(*pVectorTextureList); ++it)
-		destVertexTextureList->push_back(*it);
+	for (auto it = std::begin(VectorTextureArray); it!=std::end(VectorTextureArray); ++it)
+		destVertexTextureArray.push_back(*it);
 }
+
+float	CGeometryImporterOBJ::StringToFloat(string& inString)
+{
+	//Convert string object to float value using C string based conversion.
+	return (float) atof(inString.c_str());
+}
+
+int		CGeometryImporterOBJ::StringToInt(string& inString)
+{
+	//convert string object to int value using c string based conversion
+	return (int) atoi(inString.c_str());
+}
+
 
 void CGeometryImporterOBJ::ProcessFile()
 {
 	string lineBuffer = "";
 	int lineCount = 0;
 
-	//ResetObject();
-
-	//Create our list objects
-	pErrorList = new list<string>;
-	pMeshList = new list<Mesh>;
-	pVectorNormalList  = new list<Vector3D>;
-	pVectorPosList = new list<Vector3D>;
-	pVectorPosNormTextList = new list<VectorPosNormText>;
-	pVectorTextureList = new list<Vector2D>;
 
 	for (lineBuffer = ""; std::getline(*pInputFile, lineBuffer) && !pInputFile->eof(); lineCount++)
 	{
@@ -137,7 +140,18 @@ void CGeometryImporterOBJ::ProcessFile()
 		else if (regex_search(lineBuffer, regexMatch, OBJ_VERTEX_EXP))
 		{
 			m_VertexPosCount++;
-			std::cout << lineBuffer << std::endl;
+			string szX = regexMatch[1];
+			string szY = regexMatch[2];
+			string szZ = regexMatch[3];
+			Vector3D* tempVect3D = new Vector3D;
+			tempVect3D->x = StringToFloat(szX);
+			tempVect3D->y = StringToFloat(szY);
+			tempVect3D->z = StringToFloat(szZ);
+			std::cout << lineBuffer << " Position Vector" << std::endl;
+
+			//Add it to our vertex texture vector
+			VectorPosArray.push_back(*tempVect3D);
+
 		}
 		
 		//Vertex Texture
@@ -147,16 +161,31 @@ void CGeometryImporterOBJ::ProcessFile()
 			string szX = regexMatch[1];
 			string szY = regexMatch[2];
 			Vector2D* tempVect2D = new Vector2D;
-			tempVect2D->x = atof(szX.c_str());
-			tempVect2D->y = atof(szY.c_str());
-			std::cout << lineBuffer << std::endl;
+			tempVect2D->x = StringToFloat(szX);
+			tempVect2D->y = StringToFloat(szY);
+			std::cout << lineBuffer << " Texture Vector" << std::endl;
+
+			//Add it to our vertex texture vector
+			VectorTextureArray.push_back(*tempVect2D);
+
 		}
 
 		//Vertex Normal
 		else if (regex_search(lineBuffer, regexMatch, OBJ_VERTEX_NORMAL_EXP))
 		{
 			m_VertexNormalCount++;
-			std::cout << lineBuffer << std::endl;
+
+			string szX = regexMatch[1];
+			string szY = regexMatch[2];
+			string szZ = regexMatch[3];
+			Vector3D* tempVect3D = new Vector3D;
+			tempVect3D->x = StringToFloat(szX);
+			tempVect3D->y = StringToFloat(szY);
+			tempVect3D->z = StringToFloat(szZ);
+			std::cout << lineBuffer << " Normal Vector" << std::endl;
+
+			//Add it to our vertex texture vector
+			VectorNormalArray.push_back(*tempVect3D);
 		}
 		
 		//Groups
@@ -186,6 +215,43 @@ void CGeometryImporterOBJ::ProcessFile()
 		//Face Vertex-Texture Coordinate-Vector Normal
 		else if (regex_search(lineBuffer, regexMatch, OBJ_FACE_VT_TC_VN_EXP))
 		{
+			
+			VectorPosNormText* tempVect;
+			string tempString[9];
+			int tempIndexes[9];
+			for (int i = 0; i < 9; i++)
+			{
+				tempString[i] = regexMatch[i+1];
+				tempIndexes[i] = StringToInt(tempString[i]);
+			}
+
+			Face tempFace;
+
+			for (int i = 0; i < 3; i++)
+			{
+				tempVect = new VectorPosNormText;
+				int index = i * 3;
+				int posIndex = tempIndexes[index];
+				int normIndex = tempIndexes[index+1];
+				int textIndex = tempIndexes[index+2];
+				//Position
+				tempVect->posX = VectorPosArray[posIndex-1].x;
+				tempVect->posY = VectorPosArray[posIndex-1].y;
+				tempVect->posZ = VectorPosArray[posIndex-1].z;
+				//Normal
+				tempVect->normX = VectorNormalArray[normIndex-1].x;
+				tempVect->normY = VectorNormalArray[normIndex-1].y;
+				tempVect->normZ = VectorNormalArray[normIndex-1].z;
+				//Texture
+				tempVect->textU = VectorTextureArray[textIndex-1].x;
+				tempVect->textV = VectorTextureArray[textIndex-1].y;
+
+				tempFace.faceVectors.push_back( *tempVect);
+			}
+
+			FaceArray.push_back(tempFace);
+
+
 			m_FaceCount++;
 			std::cout << lineBuffer << std::endl;
 		}
@@ -284,7 +350,7 @@ void CGeometryImporterOBJ::ProcessFile()
 		else
 		{
 			string szTemp = lineCount + ": " + lineBuffer;
-			pErrorList->push_back(szTemp);
+			ErrorArray.push_back(szTemp);
 		}
 
 		
@@ -304,32 +370,11 @@ void CGeometryImporterOBJ::ResetObject()
 	//We assume the user called FreeAllBuffers() before resetting the object if they plan on loading another file in
 	//so just set points to null. User must watch memory leaks.
 
-	pErrorList = nullptr;
-	pMeshList = nullptr;
-	pVectorNormalList  = nullptr;
-	pVectorPosList = nullptr;
-	pVectorPosNormTextList = nullptr;
-	pVectorTextureList = nullptr;
+	ErrorArray.clear();
+	MeshArray.clear();
+	VectorNormalArray.clear();
+	VectorPosArray.clear();
+	FaceArray.clear();
+	VectorTextureArray.clear();
 }
 
-void CGeometryImporterOBJ::FreeAllBuffers()
-{
-	//Wipe the geometry buffers, this is up to the user to perform to avoid memory leaks.
-	if (pMeshList != nullptr)
-		delete pMeshList;
-	
-	if (pErrorList != nullptr)
-		delete pErrorList;
-
-	if (pVectorNormalList != nullptr)
-		delete pVectorNormalList;
-
-	if (pVectorPosList != nullptr)
-		delete pVectorPosList;
-
-	if (pVectorPosNormTextList != nullptr)
-		delete pVectorPosNormTextList;
-
-	if (pVectorTextureList != nullptr)
-		delete pVectorTextureList;
-}

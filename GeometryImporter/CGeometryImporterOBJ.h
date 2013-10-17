@@ -12,7 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <list>
+#include <vector>
 #include "GeometryElements.h"
 #include "OBJRegExp.h"
 
@@ -37,32 +37,34 @@ public:
 	int 	GetFaceCount()				{return m_FaceCount;};
 	int		GetMeshCount()				{return m_MeshCount;};
 
-	int		GetErrorCount()				{return pErrorList->size();};
+	int		GetErrorCount()				{return ErrorArray.size();};
 
-	//Functions to request pointers the internal geometry lists, the user is required to maintain this pointer and reset
+	//Functions to request pointers the internal geometry vectors, the user is required to maintain this pointer and reset
 	//the library appropriately. If this is not done appropriately then it may result in a memory leak.
 
-	list<Vector3D>*					GetVertexPosList(); 
-	list<Vector3D>*					GetVertexNormalList();
-	list<Vector2D>*					GetVertexTextureList();
-	list<VectorPosNormText>*		GetVectorPosNormTextList();
-	list<Mesh>*						GetMeshList();
+	vector<Vector3D>					GetVertexPosArray(); 
+	vector<Vector3D>					GetVertexNormalArray();
+	vector<Vector2D>					GetVertexTextureArray();
+	vector<Face>					GetFaceArray();
+	vector<Mesh>						GetMeshArray();
 
-	list<string>*					GetErrorList();
+	vector<string>						GetErrorArray();
 
 
 	//Functions to physically copy out elements.
-	void	CopyVectorPosNormTextList(list<VectorPosNormText>* destVectorList);
-	void	CopyMeshList(list<Mesh>* destMeshList);
+	void	CopyFaceArray( vector<Face>&	 destVectorPosNormTextvector );
+	void	CopyMeshArray(vector<Mesh>& destMeshvector);
 
-	void	CopyVertexPosList(list<Vector3D>* destVertexList);  //All perform physical memcpy
-	void	CopyVertexNormalList(list<Vector3D>* destVertexNormalList);
-	void	CopyVertexTextureList(list<Vector2D>* destVertexTextureList);
-	void	FreeAllBuffers();
+	void	CopyVertexPosArray(vector<Vector3D>& destVertexvector);  //All perform physical memcpy
+	void	CopyVertexNormalArray(vector<Vector3D>& destVertexNormalvector);
+	void	CopyVertexTextureArray(vector<Vector2D>& destVertexTexturevector);
+	
 
 private:
 	void	ProcessFile();		   //Assumes m_inputFile is set, fills internal arrays
 	void	ResetObject();		   //Resets all member functions to default values
+	float	StringToFloat(string& inString);
+	int		StringToInt(string& inString);
 
 	//Internal counts of stores information
 	int		m_VertexPosCount;			//Number of vertices in file
@@ -73,14 +75,14 @@ private:
 	int		m_MeshCount;				//Number of meshes in file
 
 	//Pointers to element arrays
-	list<Vector3D>*					pVectorPosList;				//Pointer to list of vertices
-	list<Vector3D>*					pVectorNormalList;			//Pointer to list of vertex normals
-	list<Vector2D>*					pVectorTextureList;			//Pointer to list of texture vertices
-	list<VectorPosNormText>*		pVectorPosNormTextList;		//Pointer to a list of Pos/Norm/Text Vectors
-	list<Mesh>*						pMeshList;					//Pointer to a list of meshes
+	vector<Vector3D>					VectorPosArray;				//Position Array
+	vector<Vector3D>					VectorNormalArray;			//Normal Array
+	vector<Vector2D>					VectorTextureArray;			//Texture Array
+	vector<Face>						FaceArray;					//Triangle Array
+	vector<Mesh>						MeshArray;					//Mesh array
 
-	list<string>*					pErrorList;					//Pointer to a list of strings that contains description of any problems encountered
-																//Format is of form <File Name:LineNumber>:<Error Found>
+	vector<string>						ErrorArray;					//vector of strings that contains description of any problems encountered
+																	//Format is of form <File Name:LineNumber>:<Error Found>
 
 	//File handle
 	ifstream*	pInputFile;		//Pointer to an externally opened and verified input file, user is required to maintain it

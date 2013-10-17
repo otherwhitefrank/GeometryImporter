@@ -8,12 +8,72 @@
 #ifndef GEOMETRY_ELEMENTS_H
 #define GEOMETRY_ELEMENTS_H
 
+#include <list>
+#include <vector>
 #include <string>
 
 using namespace std;
 
-struct	VectorPosNormText
+//Base class for polymorphism, needed since we can have faces in several forms.
+const int VECTOR_POS_TEXT_NORM = 1;
+const int VECTOR_POS = 2;
+const int VECTOR_POS_TEXT = 3;
+const int VECTOR_POS_NORM = 4;
+const int VECTOR_BASE = 5;
+
+
+
+class VectorBase
 {
+public:
+	virtual int getTypeId() {return VECTOR_BASE;};
+};
+
+class Face
+{
+public:
+
+	//A face consists of n-vertices, usually triangles
+	vector<VectorPosNormText> faceVectors;  //Vertices can be in form Pos/Norm/Texture, Pos, Pos/Norm, or Pos/Text
+									 //This requires casting VectorBase to the appropriate type.
+};
+
+class	VectorPosNorm : VectorBase
+{
+public:
+	virtual int getTypeId() {return VECTOR_POS_NORM;};
+	float	posX;
+	float	posY;
+	float	posZ;
+	float   normX;
+	float	normY;
+	float	normZ;
+};
+
+class	VectorPosText : VectorBase
+{
+public:
+	virtual int getTypeId() {return VECTOR_POS_TEXT;};
+	float	posX;
+	float	posY;
+	float	posZ;
+	float	textU;
+	float	textV;
+};
+
+class	VectorPos : VectorBase
+{
+public:
+	virtual int getTypeId() {return VECTOR_POS;};
+	float	posX;
+	float	posY;
+	float	posZ;
+};
+
+class	VectorPosNormText : VectorBase
+{
+public:
+	virtual int getTypeId() {return VECTOR_POS_TEXT_NORM;};
 	float	posX;
 	float	posY;
 	float	posZ;
